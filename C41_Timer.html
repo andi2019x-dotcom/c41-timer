@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C41 Timer</title>
+<style>
+:root{
+  --bg:#f1f1f1;--card:#fff;--text:#242424;--muted:#777;
+  --accent:#ff7800;--accent2:#e96800;--border:#ddd;
+  --green:#2e8b57;--red:#c63d3d;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.app{max-width:1050px;margin:auto;min-height:100vh}
+header{background:#202020;color:white;padding:18px 22px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px #0003}
+header h1{margin:0;font-size:25px} header p{margin:4px 0 0;color:#bbb;font-size:13px}
+main{padding:16px}
+.layout{display:grid;grid-template-columns:230px 1fr;gap:16px;align-items:start}
+.controls{
+  background:var(--card);border-radius:8px;padding:14px;box-shadow:0 1px 3px #0001;
+  position:sticky;top:82px
+}
+.controls h2{font-size:17px;margin:0 0 12px}
+.control-buttons{display:flex;flex-direction:column;gap:8px}
+button{border:0;border-radius:7px;padding:11px 12px;font-size:14px;cursor:pointer;background:#e7e7e7;color:#222}
+button:hover{background:#dcdcdc}
+button.primary{background:var(--accent);color:#fff;font-weight:650}
+button.primary:hover{background:var(--accent2)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.danger{color:var(--red)}
+.film-select{margin-bottom:14px}
+.film-select .label{margin-bottom:6px}
+.film-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.film-buttons button{padding:10px 0;font-weight:650}
+.film-buttons button.sel{background:var(--accent);color:#fff}
+.film-info{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+.hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:14px}
+.keyboard{font-family:monospace;background:#eee;border:1px solid #ccc;padding:1px 5px;border-radius:4px}
+
+.step{
+  background:var(--card);border-radius:8px;margin-bottom:12px;overflow:hidden;
+  border:2px solid transparent;box-shadow:0 1px 3px #0001;transition:.2s
+}
+.step.active{border-color:var(--accent)}
+.step.done{border-color:#b8dec8}
+.step-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 13px}
+.badge{background:var(--accent);color:white;padding:7px 10px;border-radius:4px;font-weight:600}
+.status{font-size:12px;color:#777;font-weight:600}
+.step-body{padding:12px 14px 14px;border-top:1px solid #eee}
+.step-grid{display:grid;grid-template-columns:1fr auto;gap:10px 20px;align-items:center}
+.label{color:#888;font-size:12px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
+.setting{display:flex;gap:7px;align-items:center}
+input[type=number]{width:65px;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:15px}
+.setting span{color:#777;font-size:13px}
+.timer{font-variant-numeric:tabular-nums;font-size:39px;font-weight:700;text-align:right;min-width:145px}
+.timer.finished{color:var(--green)}
+.movement select{padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:white}
+.step-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.step-actions button{padding:8px 11px;font-size:13px}
+.step-note{font-size:12px;color:#888;margin-top:8px}
+.hide{display:none}
+#nextBtn,#pauseBtn{padding:17px 12px;font-size:21px}
+/* Kompaktansicht (Prozess gestartet) */
+header.compact{padding:9px 14px;text-align:center}
+header.compact h1{font-size:18px}
+header.compact p{display:none}
+main.compact{padding:8px}
+.layout.compact{align-items:stretch;max-width:560px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:8px;height:calc(100dvh - 70px)}
+.layout.compact #steps{order:1;flex:1;min-height:0;display:flex}
+.layout.compact .controls{order:2;position:static;padding:8px}
+.layout.compact .controls h2,.layout.compact .film-select,.layout.compact .hint{display:none}
+.layout.compact .control-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.layout.compact .control-buttons button{padding:12px 4px;font-size:15px}
+.layout.compact #prevBtn,.layout.compact #skipBtn{padding:14px 4px;font-size:17px}
+.layout.compact #nextBtn,.layout.compact #pauseBtn{padding:19px 4px;font-size:22px}
+#filmBar{display:none;order:0;background:#202020;color:#fff;border-radius:8px;padding:9px 12px;font-size:15px;
+  justify-content:space-between;align-items:center;gap:10px}
+#filmBar b{background:var(--accent);padding:3px 10px;border-radius:5px;font-size:17px}
+.layout.compact #filmBar{display:flex}
+.frame{flex:1;width:100%;min-height:0;background:var(--card);border-radius:10px;box-shadow:0 1px 3px #0001;
+  display:flex;flex-direction:column;justify-content:center;gap:12px;padding:14px}
+.dots{display:flex;justify-content:center;gap:8px;margin-bottom:4px}
+.dots i{width:9px;height:9px;border-radius:50%;background:#ddd;transition:.2s}
+.dots i.on{background:var(--accent);transform:scale(1.5)}
+.dots i.past{background:#9fd0b4}
+.side{display:flex;align-items:center;justify-content:space-between;gap:8px;opacity:.5;font-size:19px;min-height:30px;padding:0 6px}
+.side .nm{font-weight:600}
+.side .tm{font-variant-numeric:tabular-nums;font-weight:700}
+.cur{text-align:center;border:2px solid var(--accent);border-radius:10px;padding:14px 8px}
+.cur.done{border-color:#b8dec8}
+.cur .nm{font-size:clamp(26px,8vw,40px);font-weight:700}
+.cur .timer{font-size:clamp(68px,26vw,130px);text-align:center;min-width:0;line-height:1.1}
+.cur .meta{font-size:13px;color:#777}
+.cur .meta .status{font-size:13px}
+@media(max-width:700px){
+  .layout{grid-template-columns:1fr}
+  .controls{position:static}
+  .control-buttons{flex-direction:row;flex-wrap:wrap}
+  .control-buttons button{flex:1}
+}
+@media(max-width:480px){
+  main{padding:10px}.step-grid{grid-template-columns:1fr}
+  .timer{text-align:left}.control-buttons{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>Timer C41</h1>
+  <p>Schrittweise Entwicklung – jeder Schritt wird separat gestartet.</p>
+</header>
+
+<main>
+<div class="layout">
+  <aside class="controls">
+    <h2>Steuerung</h2>
+    <div class="film-select">
+      <div class="label">Film wählen</div>
+      <div class="film-buttons" id="filmButtons"></div>
+      <div class="film-info" id="filmInfo"></div>
+    </div>
+    <div class="control-buttons">
+      <button class="primary" id="nextBtn">Nächsten Schritt starten</button>
+      <button id="pauseBtn">Pause / Fortsetzen</button>
+      <button id="prevBtn" class="hide">◀ Zurück</button>
+      <button id="skipBtn" class="hide">Vor ▶</button>
+      <button class="danger" id="resetBtn">Alles zurücksetzen</button>
+      <button id="viewBtn" class="hide">⚙ Einstellungen</button>
+    </div>
+    <div class="hint">
+      <b>Bedienung</b><br><br>
+      <span class="keyboard">N</span> nächsten Schritt<br>
+      <span class="keyboard">Leertaste</span> Pause/Fortsetzen<br>
+      <span class="keyboard">R</span> Reset<br><br>
+      Zusätzlich besitzt <b>jeder Schritt eigene Steuerbuttons</b> (nur in der Einstellungsansicht).
+    </div>
+  </aside>
+
+  <div id="filmBar"></div>
+  <section id="steps"></section>
+</div>
+</main>
+</div>
+
+<script>
+const defaultSteps=[
+ {name:"Vorwässern",time:300,movement:"Ständig"},
+ {name:"Entwicklerbad",time:195,movement:"Ständig"},
+ {name:"Stopbad",time:60,movement:"Ständig"},
+ {name:"Blix bath",time:240,movement:"Ständig"},
+ {name:"Wash bath",time:360,movement:"Ständig"},
+ {name:"Stab bath",time:60,movement:"Ständig"}
+];
+
+// Zeiten je Film (1-4) in Sekunden – Adox C-Tec 41, Viertel-Ansatz
+const filmTimes={
+ "Entwicklerbad":[195,210,225,240],
+ "Blix bath":[240,360,600,900]
+};
+let film=parseInt(localStorage.getItem("c41Film"))||1;
+if(film<1||film>4)film=1;
+
+let steps=JSON.parse(localStorage.getItem("c41Steps")||"null")||defaultSteps;
+let current=-1,remaining=0,running=false,interval=null;
+
+const container=document.getElementById("steps");
+const nextBtn=document.getElementById("nextBtn");
+const pauseBtn=document.getElementById("pauseBtn");
+const resetBtn=document.getElementById("resetBtn");
+const prevBtn=document.getElementById("prevBtn");
+const skipBtn=document.getElementById("skipBtn");
+const viewBtn=document.getElementById("viewBtn");
+let showAll=false;
+const filmButtons=document.getElementById("filmButtons");
+const filmInfo=document.getElementById("filmInfo");
+
+function renderFilm(){
+ filmButtons.innerHTML="";
+ for(let f=1;f<=4;f++){
+   const b=document.createElement("button");
+   b.textContent=f;
+   b.className=f===film?"sel":"";
+   b.onclick=()=>selectFilm(f);
+   filmButtons.appendChild(b);
+ }
+ document.getElementById("filmBar").innerHTML="<b>Film "+film+"</b><span>Entwickler "+formatTime(filmTimes["Entwicklerbad"][film-1])+
+   "</span><span>Blix "+formatTime(filmTimes["Blix bath"][film-1])+"</span>";
+ filmInfo.innerHTML="Entwickler "+formatTime(filmTimes["Entwicklerbad"][film-1])+
+   "<br>Blix "+formatTime(filmTimes["Blix bath"][film-1]);
+}
+function selectFilm(f){
+ film=f;
+ localStorage.setItem("c41Film",f);
+ steps.forEach((st,i)=>{
+   if(filmTimes[st.name]){
+     st.time=filmTimes[st.name][f-1];
+     if(i===current&&!running)remaining=st.time;
+   }
+ });
+ save();renderFilm();render();update();
+}
+
+function formatTime(sec){
+ sec=Math.max(0,Math.ceil(sec));
+ return Math.floor(sec/60)+":"+String(sec%60).padStart(2,"0");
+}
+function save(){localStorage.setItem("c41Steps",JSON.stringify(steps));}
+
+function render(){
+ container.innerHTML="";
+ const compact=current>=0&&!showAll;
+ document.querySelector(".layout").classList.toggle("compact",compact);
+ document.querySelector("header").classList.toggle("compact",compact);
+ document.querySelector("main").classList.toggle("compact",compact);
+ viewBtn.classList.toggle("hide",current<0);
+ viewBtn.textContent=showAll?"▣ Kompakt":"⚙ Einstellungen";
+ if(compact){renderCompact();return;}
+ steps.forEach((step,i)=>{
+   const el=document.createElement("article");
+   el.className="step"+(i===current?" active":"")+
+     (i<current||(i===current&&remaining===0&&!running)?" done":"");
+   el.innerHTML=`
+   <div class="step-head">
+     <span class="badge">${step.name}</span>
+     <span class="status">${i===current?(running?"LÄUFT":remaining===0?"FERTIG":"PAUSE"):i<current?"ERLEDIGT":"WARTET"}</span>
+   </div>
+   <div class="step-body">
+     <div class="step-grid">
+       <div>
+         <div class="label">Zeit einstellen</div>
+         <div class="setting">
+           <input type="number" min="0" max="999" value="${Math.floor(step.time/60)}" data-i="${i}" data-unit="m">
+           <span>min</span>
+           <input type="number" min="0" max="59" value="${step.time%60}" data-i="${i}" data-unit="s">
+           <span>sek</span>
+         </div>
+       </div>
+       <div class="timer ${i===current&&remaining===0?"finished":""}">
+         ${i===current?formatTime(remaining):formatTime(step.time)}
+       </div>
+       <div>
+         <div class="label">Bewegung</div>
+         <div class="movement">
+           <select data-movement="${i}">
+             <option ${step.movement==="Ständig"?"selected":""}>Ständig</option>
+             <option ${step.movement==="Intervall"?"selected":""}>Intervall</option>
+             <option ${step.movement==="Keine"?"selected":""}>Keine</option>
+           </select>
+         </div>
+       </div>
+     </div>
+     <div class="step-actions">
+       <button class="primary start-step" data-step="${i}">▶ Start</button>
+       <button class="pause-step" data-step="${i}">⏸ Pause</button>
+       <button class="reset-step" data-step="${i}">↺ Reset</button>
+       ${i<steps.length-1?`<button class="next-step" data-step="${i}">→ Nächsten starten</button>`:""}
+     </div>
+     <div class="step-note">Schritt ${i+1} von ${steps.length}</div>
+   </div>`;
+   container.appendChild(el);
+ });
+
+ document.querySelectorAll("input[data-i]").forEach(input=>{
+   input.addEventListener("change",()=>{
+     const i=+input.dataset.i;
+     const m=document.querySelector(`input[data-i="${i}"][data-unit="m"]`).valueAsNumber||0;
+     const s=document.querySelector(`input[data-i="${i}"][data-unit="s"]`).valueAsNumber||0;
+     steps[i].time=Math.max(0,Math.min(999*60+59,m*60+s));
+     if(i===current&&!running)remaining=steps[i].time;
+     save();render();
+   });
+ });
+ document.querySelectorAll("select[data-movement]").forEach(sel=>{
+   sel.addEventListener("change",()=>{
+     steps[+sel.dataset.movement].movement=sel.value;save();
+   });
+ });
+ document.querySelectorAll(".start-step").forEach(b=>b.onclick=()=>jump(+b.dataset.step));
+ document.querySelectorAll(".pause-step").forEach(b=>b.onclick=()=>pauseCurrent());
+ document.querySelectorAll(".reset-step").forEach(b=>b.onclick=()=>resetStep(+b.dataset.step));
+ document.querySelectorAll(".next-step").forEach(b=>b.onclick=()=>jump(+b.dataset.step+1));
+}
+
+function renderCompact(){
+ const side=i=>i<0||i>=steps.length?'<div class="side"></div>':
+   `<div class="side"><span class="nm">${steps[i].name}</span><span class="tm">${formatTime(steps[i].time)}</span></div>`;
+ const s=steps[current],isDone=remaining===0&&!running;
+ const st=running?"LÄUFT":remaining===0?"FERTIG":"PAUSE";
+ const dots=steps.map((_,i)=>`<i class="${i===current?"on":i<current?"past":""}"></i>`).join("");
+ container.innerHTML=`<div class="frame"><div class="dots">${dots}</div>${side(current-1)}
+  <div class="cur ${isDone?"done":""}"><div class="nm">${s.name}</div>
+  <div class="timer ${isDone?"finished":""}">${formatTime(remaining)}</div>
+  <div class="meta"><span class="status">${st}</span> · Schritt ${current+1}/${steps.length} · Bewegung: ${s.movement}</div></div>
+  ${side(current+1)}</div>`;
+}
+
+// Ton + Display-Wachhaltung
+let ac=null,wl=null,endAt=0,lastSec=null;
+function audioInit(){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();}catch(e){}}
+function beep(f,d,v,w,ty){if(!ac)return;const t=ac.currentTime+(w||0),o=ac.createOscillator(),g=ac.createGain();
+ o.frequency.value=f;if(ty)o.type=ty;o.connect(g);g.connect(ac.destination);
+ g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.001,t+d);o.start(t);o.stop(t+d+.02);}
+function tickSound(){beep(1400,.06,.6)}
+function endSound(){beep(660,.35,.7,0,"sawtooth");beep(523,.35,.7,.4,"sawtooth");beep(392,.7,.7,.8,"sawtooth")}
+async function wake(on){try{
+ if(on){if(!wl&&navigator.wakeLock){wl=await navigator.wakeLock.request("screen");wl.addEventListener("release",()=>{wl=null;if(document.visibilityState==="visible")wake(true)})}}
+ else if(wl){await wl.release();wl=null}
+}catch(e){}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")wake(true)});
+document.addEventListener("pointerdown",()=>wake(true));
+
+function startStep(i){
+ if(i<0||i>=steps.length)return;
+ clearInterval(interval);
+ current=i;remaining=steps[i].time;running=true;lastSec=null;
+ endAt=Date.now()+remaining*1000;
+ interval=setInterval(tick,100);
+ audioInit();wake(true);
+ render();update();
+}
+function tick(){
+ remaining=Math.max(0,(endAt-Date.now())/1000);
+ const sc=Math.ceil(remaining);
+ if(sc!==lastSec){lastSec=sc;if(sc>=1&&sc<=10)tickSound();}
+ if(remaining<=0){
+   remaining=0;running=false;clearInterval(interval);
+   endSound();
+   update();
+   return;
+ }
+ update();
+}
+function pauseCurrent(){
+ if(current<0)return;
+ if(running){running=false;clearInterval(interval)}
+ else if(remaining>0){audioInit();endAt=Date.now()+remaining*1000;running=true;interval=setInterval(tick,100)}
+ update();
+}
+function resetStep(i){
+ if(i===current){clearInterval(interval);running=false;remaining=steps[i].time;update()}
+ else render();
+}
+function resetAll(){
+ clearInterval(interval);current=-1;remaining=0;running=false;showAll=false;render();update();
+}
+function needsConfirm(){return running||(current>=0&&remaining>0&&remaining<steps[current].time)}
+function jump(i){
+ if(i<0||i>=steps.length)return;
+ if(needsConfirm()&&!confirm("Laufenden Timer verlassen und zu \u201E"+steps[i].name+"\u201C springen?"))return;
+ startStep(i);
+}
+function nextStep(){
+ if(running)return;
+ jump(current+1);
+}
+function resetAsk(){
+ if(current>=0&&!confirm("Alles zur\u00fccksetzen?"))return;
+ resetAll();
+}
+function update(){
+ const els=container.querySelectorAll(".step");
+ els.forEach((el,i)=>{
+   el.classList.toggle("active",i===current);
+   el.classList.toggle("done",i<current||(i===current&&remaining===0&&!running));
+   const t=el.querySelector(".timer");
+   if(t){t.textContent=i===current?formatTime(remaining):formatTime(steps[i].time);
+      t.classList.toggle("finished",i===current&&remaining===0)}
+   const s=el.querySelector(".status");
+   if(s)s.textContent=i===current?(running?"LÄUFT":remaining===0?"FERTIG":"PAUSE"):i<current?"ERLEDIGT":"WARTET";
+ });
+ const cur=container.querySelector(".cur");
+ if(cur){
+   const t=cur.querySelector(".timer");
+   t.textContent=formatTime(remaining);t.classList.toggle("finished",remaining===0);
+   cur.classList.toggle("done",remaining===0&&!running);
+   cur.querySelector(".status").textContent=running?"LÄUFT":remaining===0?"FERTIG":"PAUSE";
+ }
+ const cp=current>=0&&!showAll;
+ prevBtn.classList.toggle("hide",!cp);skipBtn.classList.toggle("hide",!cp);
+ prevBtn.disabled=current<=0;skipBtn.disabled=current>=steps.length-1;
+ nextBtn.disabled=running||current>=steps.length-1&&remaining===0;
+ nextBtn.textContent=current>=0&&current>=steps.length-1&&remaining===0?"Alle fertig":cp?"▶ Start":"Nächsten Schritt starten";
+ pauseBtn.textContent=running?"⏸ Stop":current>=0?"▶ Weiter":"Pause / Fortsetzen";
+ resetBtn.textContent=current>=0?"↺ Reset":"Alles zurücksetzen";
+}
+
+nextBtn.onclick=nextStep;
+pauseBtn.onclick=pauseCurrent;
+resetBtn.onclick=resetAsk;
+prevBtn.onclick=()=>jump(current-1);
+skipBtn.onclick=()=>jump(current+1);
+viewBtn.onclick=()=>{showAll=!showAll;render();update();};
+
+document.addEventListener("keydown",e=>{
+ if(e.target.matches("input,select"))return;
+ if(e.key.toLowerCase()==="n"){e.preventDefault();nextStep()}
+ if(e.code==="Space"){e.preventDefault();pauseCurrent()}
+ if(e.key.toLowerCase()==="r"){e.preventDefault();resetAsk()}
+});
+renderFilm();render();update();
+</script>
+</body>
+</html>

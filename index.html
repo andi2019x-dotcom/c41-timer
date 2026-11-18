@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>C41 Timer</title>
+<title>Filmentwicklung Timer</title>
 <style>
 :root{
   --bg:#f1f1f1;--card:#fff;--text:#242424;--muted:#777;
@@ -104,16 +104,69 @@ main.compact{padding:8px}
   main{padding:10px}.step-grid{grid-template-columns:1fr}
   .timer{text-align:left}.control-buttons{flex-direction:column}
 }
+/* ===== v2.0: Verfahrenswahl + S/W ===== */
+header{position:sticky}
+.homeBtn{position:absolute;right:14px;top:50%;transform:translateY(-50%);padding:7px 10px;font-size:13px;background:#444;color:#fff}
+.homeBtn:hover{background:#666}
+body[data-mode=home] .homeBtn{display:none}
+body[data-mode=home] #c41,body[data-mode=home] #bwm,body[data-mode=c41] #home,body[data-mode=c41] #bwm,body[data-mode=bw] #home,body[data-mode=bw] #c41{display:none}
+#home{padding:16px;max-width:760px;margin:auto}
+.hcards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hc{border-radius:12px;padding:28px 16px;text-align:center;font-size:24px;font-weight:700;color:#fff;min-height:200px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.hc small{font-size:13px;font-weight:400;opacity:.85}
+.hc.c{background:#ff7800}.hc.c:hover{background:#e96800}
+.hc.b{background:#222;border:3px solid #ccc}.hc.b:hover{background:#000}
+@media(max-width:520px){.hcards{grid-template-columns:1fr}.hc{min-height:130px}}
+body.bw{--bg:#e6e6e6;--accent:#3a3a3a;--accent2:#000;--border:#bbb}
+body.bw header{background:#000;border-bottom:4px solid #fff}
+body.bw button.primary{background:#2b2b2b}body.bw button.primary:hover{background:#000}
+.bwL{display:grid;grid-template-columns:230px 1fr;gap:16px;align-items:start;padding:16px;max-width:1050px;margin:auto}
+.bwL .controls{top:82px}
+@media(max-width:700px){.bwL{grid-template-columns:1fr;padding:10px}.bwL .controls{position:static}}
+.bwF{display:flex;flex-direction:column;gap:8px;max-width:560px;margin:0 auto;padding:8px;height:calc(100dvh - 70px)}
+.bwF .frame{flex:1}
+.bwF .cur .big{font-size:clamp(44px,15vw,92px);font-weight:800;line-height:1.1;margin:6px 0}
+.bwF .cur .fw{font-weight:700;letter-spacing:.05em;font-size:clamp(14px,4vw,20px)}
+.bwF .ln{font-size:clamp(28px,10vw,56px);font-weight:800;line-height:1.15}
+.agit{font-size:clamp(20px,6vw,32px);font-weight:800;padding:10px;border-radius:8px;margin:8px 0;background:#ddd;color:#555}
+.agit.on{background:#000;color:#fff;animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.55}}
+.bwF .bar{background:#000;color:#fff;border-radius:8px;padding:8px 12px;font-size:14px;display:flex;justify-content:space-between;gap:8px}
+.bwF .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.okb{padding:24px 8px;font-size:clamp(18px,5vw,26px);font-weight:800;width:100%}
+.cinfo{font-size:12px;color:var(--muted);line-height:1.5;margin:8px 0}
+input[type=text],input[type=date],textarea,.fsel{padding:8px;border:1px solid var(--border);border-radius:6px;font-size:15px;width:100%;font-family:inherit}
+#dbp{position:fixed;inset:0;background:var(--bg);z-index:50;overflow:auto;display:none}
+#dbp.on{display:block}
+.dbi{max-width:900px;margin:auto;padding:14px}
+.dbh{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tabs{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
+.card{background:var(--card);border-radius:8px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px #0001}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.fg label,.card label{font-size:12px;color:#777;text-transform:uppercase;display:block}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.row button{padding:8px 11px;font-size:13px}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;background:#ddd;margin-left:6px}
+.tag.ok{background:#b8dec8}.tag.cmp{background:#ffe2a8}
+.del{opacity:.55}
 </style>
 </head>
-<body>
+<body data-mode="home">
 <div class="app">
 <header>
-  <h1>Timer C41</h1>
+  <h1 id="hTitle">Filmentwicklung</h1><button class="homeBtn" id="homeBtn">⌂ Verfahren</button>
   <p>Schrittweise Entwicklung – jeder Schritt wird separat gestartet.</p>
 </header>
 
-<main>
+<div id="home">
+  <h2 style="margin:6px 0 14px">Entwicklungsverfahren wählen</h2>
+  <div class="hcards">
+    <button class="hc c" data-mode="c41">C41 Farbe<small>Adox C-Tec 41 · Film 1–4</small></button>
+    <button class="hc b" data-mode="bw">Schwarz-Weiß<small>10 Schritte · Zeitdatenbank · Drive</small></button>
+  </div>
+  <p class="hint">Version 2.0 · Datenstruktur 1</p>
+</div>
+<main id="c41">
 <div class="layout">
   <aside class="controls">
     <h2>Steuerung</h2>
@@ -143,6 +196,7 @@ main.compact{padding:8px}
   <section id="steps"></section>
 </div>
 </main>
+<section id="bwm"></section>
 </div>
 
 <script>
@@ -395,12 +449,195 @@ skipBtn.onclick=()=>jump(current+1);
 viewBtn.onclick=()=>{showAll=!showAll;render();update();};
 
 document.addEventListener("keydown",e=>{
- if(e.target.matches("input,select"))return;
+ if(e.target.matches("input,select,textarea")||document.body.dataset.mode!=="c41")return;
  if(e.key.toLowerCase()==="n"){e.preventDefault();nextStep()}
  if(e.code==="Space"){e.preventDefault();pauseCurrent()}
  if(e.key.toLowerCase()==="r"){e.preventDefault();resetAsk()}
 });
 renderFilm();render();update();
+</script>
+<script>
+/* ===== S/W-Modul (v2.0) ===== */
+(()=>{
+const VER="2.0",$=(s,r=document)=>r.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LS=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const SV=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){alert("Speichern im Browser fehlgeschlagen (Speicher voll?). Bitte JSON-Export machen.")}};
+const now=()=>Date.now(),uid=()=>now().toString(36)+Math.random().toString(36).slice(2,8),today=()=>new Date().toISOString().slice(0,10),dstr=t=>new Date(t).toLocaleString("de-DE");
+const parseT=v=>{v=String(v||"").trim().replace(",",".");if(!v)return 0;if(v.includes(":")){const[a,b]=v.split(":");return Math.round((+a||0)*60+(+b||0))}const n=parseFloat(v);return isNaN(n)?0:Math.round(n*60)};
+const defSteps=()=>[{n:"Vorwässern",t:"t",time:300},{n:"Entwickeln",t:"t",time:0,agit:1},{n:"Zwischenwässern",t:"m",counts:[5,10,15],up:1},{n:"Fixieren",t:"t",time:420,agit:1},{n:"Schlusswässern",t:"m",counts:[5,10,20,40],up:1},{n:"Netzmittel",t:"t",time:60,hint:"NICHT KIPPEN"}];
+let S=LS("bwSteps",null);if(!Array.isArray(S)||S.length!==6||!S.every(x=>x.t==="t"||Array.isArray(x.counts)))S=defSteps();S[2].up=1;
+let combo=LS("bwCombo",null),DB=LS("bwDB",[]),SN=LS("bwSnaps",[]);
+const root=$("#bwm"),dbp=document.createElement("div");dbp.id="dbp";document.body.appendChild(dbp);
+let cur=-1,rem=0,run=false,iv=null,bEnd=0,bLast=null,set=false;
+const isT=i=>S[i].t==="t",saveS=()=>SV("bwSteps",S);
+const stat=i=>i===cur?(isT(i)?(run?"LÄUFT":rem===0?"FERTIG":"PAUSE"):(S[i].up&&run?"LÄUFT":"OFFEN")):i<cur?"ERLEDIGT":"WARTET";
+const cline=()=>combo?esc([combo.maker,combo.type].filter(Boolean).join(" ")+(combo.ei?" @ EI "+combo.ei:"")+" · "+(combo.dev||"")+(combo.dil?" "+combo.dil:"")+(combo.temp?" · "+combo.temp+" °C":"")):"Keine Kombination gewählt (Zeit manuell)";
+
+/* ---- Timer ---- */
+function start(i){
+ if(i<0||i>=S.length)return;
+ if(isT(i)&&S[i].time<=0){alert("Für „"+S[i].n+"“ ist noch keine Zeit eingestellt. Bitte Zeit eingeben oder aus der Datenbank übernehmen.");return}
+ clearInterval(iv);cur=i;run=false;rem=0;bLast=null;bAg=-1;set=false;
+ if(isT(i)){rem=S[i].time;run=true;bEnd=now()+rem*1000;iv=setInterval(tick,100)}else if(S[i].up){rem=0;run=true;bEnd=now();iv=setInterval(tick,100)}
+ audioInit();wake(true);draw()}
+let bAg=-1;const inAg=()=>cur>=0&&cur<S.length&&isT(cur)&&S[cur].agit&&run&&rem>0&&(S[cur].time-rem)%60<10,fmtUp=x=>{x=Math.floor(x);return Math.floor(x/60)+":"+String(x%60).padStart(2,"0")};
+function tick(){if(S[cur].up){rem=(now()-bEnd)/1000;upd();return}rem=Math.max(0,(bEnd-now())/1000);
+ if(S[cur].agit&&rem>0){const el=Math.floor(S[cur].time-rem);if(el!==bAg){bAg=el;if(el%60<10)beep(el%60===0?1175:880,.4,.7)}}const sc=Math.ceil(rem);if(sc!==bLast){bLast=sc;if(sc>=1&&sc<=10)tickSound()}
+ if(rem<=0){rem=0;run=false;clearInterval(iv);endSound();draw();return}upd()}
+function pause(){if(cur<0||cur>=S.length||!isT(cur))return;if(run){run=false;clearInterval(iv)}else if(rem>0){audioInit();bEnd=now()+rem*1000;run=true;iv=setInterval(tick,100)}draw()}
+function resetStep(i){if(i===cur&&isT(i)){clearInterval(iv);run=false;rem=S[i].time}draw()}
+function resetAll(){clearInterval(iv);cur=-1;rem=0;run=false;set=false;draw()}
+const busy=()=>run||(cur>=0&&cur<S.length&&isT(cur)&&rem>0&&rem<S[cur].time);
+function go(i){if(busy()&&!confirm("Laufenden Timer verlassen?"))return;start(i)}
+function adv(){if(cur>=S.length-1){clearInterval(iv);run=false;cur=S.length;draw();return}start(cur+1)} // nur durch Nutzeraktion
+window.bwBusy=busy;
+function upd(){root.querySelectorAll(".js-t").forEach(t=>{const i=+t.dataset.i;t.textContent=i===cur&&S[i].up?fmtUp(rem):formatTime(i===cur?rem:S[i].time);t.classList.toggle("finished",i===cur&&isT(i)&&rem===0&&!run)});
+ root.querySelectorAll(".js-a").forEach(a=>{const g=inAg();a.textContent=g?"🔔 JETZT KIPPEN":"nicht kippen – Ruhe";a.classList.toggle("on",g)});
+ root.querySelectorAll(".status").forEach(s=>{const i=+s.dataset.i;if(!isNaN(i))s.textContent=stat(i)})}
+
+/* ---- Darstellung ---- */
+function draw(){
+ const cp=cur>=0&&!set;
+ if(document.body.dataset.mode==="bw"){$("header").classList.toggle("compact",cp)}
+ root.innerHTML=cp?compactH():settingsH();upd()}
+function compactH(){
+ const dots=S.map((_,i)=>`<i class="${i===cur?"on":i<cur?"past":""}"></i>`).join("");
+ let body,main;
+ if(cur===S.length){body=`<div class="cur done"><div class="nm">FERTIG</div><div class="fw">Entwicklung abgeschlossen</div></div>`;main=`<button class="primary okb" data-a="save">In Datenbank speichern</button>`}
+ else if(isT(cur)){const fin=rem===0&&!run;
+  body=`<div class="cur ${fin?"done":""}"><div class="nm">${esc(S[cur].n)}</div><div class="timer js-t" data-i="${cur}"></div>${S[cur].agit?`<div class="agit js-a"></div>`:""}${S[cur].hint?`<div class="fw" style="font-size:clamp(22px,7vw,40px);font-weight:800">${S[cur].hint}</div>`:""}<div class="meta"><span class="status" data-i="${cur}"></span> · Schritt ${cur+1}/${S.length}</div></div>`;
+  main=fin?`<button class="primary okb" data-a="adv">WEITER ▶</button>`:`<button class="primary okb" data-a="pause">${run?"⏸ Pause":"▶ Weiter"}</button>`}
+ else{body=`<div class="cur"><div class="nm">${esc(S[cur].n.toUpperCase())}</div>${S[cur].counts.map((c,k)=>(k?`<div class="fw">↓ WASSER WECHSELN</div>`:"")+`<div class="ln">${c}× KIPPEN</div>`).join("")}<div class="fw" style="margin-top:6px">JEWEILS FRISCHES WASSER</div>${S[cur].up?`<div class="timer js-t" data-i="${cur}" style="font-size:clamp(34px,11vw,64px)"></div><div class="fw">Dauer bisher</div>`:""}<div class="meta">Schritt ${cur+1}/${S.length} · kein Timer</div></div>`;main=`<button class="primary okb" data-a="adv">ARBEITSSCHRITT ERLEDIGT – WEITER</button>`}
+ return `<div class="bwF"><div class="bar"><b>S/W</b><span>${cline()}</span></div><div class="frame"><div class="dots">${dots}</div>${body}</div>${main}
+ <div class="g2"><button data-a="prev" ${cur<=0?"disabled":""}>◀ Zurück</button><button data-a="skip" ${cur>=S.length-1?"disabled":""}>Vor ▶</button><button class="danger" data-a="resetAsk">↺ Reset</button><button data-a="set">⚙ Einstellungen</button></div></div>`}
+function settingsH(){
+ const cards=S.map((s,i)=>`<article class="step ${i===cur?"active":i<cur?"done":""}"><div class="step-head"><span class="badge">${i+1}. ${esc(s.n)}</span><span class="status" data-i="${i}"></span></div><div class="step-body">`+
+ (s.t==="t"?`<div class="step-grid"><div><div class="label">Zeit einstellen${i===1?" (Entwicklungszeit)":""}${s.agit?" · Kipp-Signal zu Beginn und jede volle Minute (10 s)":""}${s.hint?" · "+s.hint.toLowerCase():""}</div><div class="setting"><input type="number" min="0" max="999" value="${Math.floor(s.time/60)}" data-i="${i}" data-u="m"><span>min</span><input type="number" min="0" max="59" value="${s.time%60}" data-i="${i}" data-u="s"><span>sek</span></div></div><div class="timer js-t" data-i="${i}"></div></div>
+ <div class="step-actions"><button class="primary" data-a="go" data-i="${i}">▶ Start</button><button data-a="pause">⏸ Pause</button><button data-a="rs" data-i="${i}">↺ Reset</button></div>`
+ :`<div class="step-grid"><div><div class="label">Kippzahlen je Durchgang (Wasser jeweils wechseln, ${s.up?"Zeit läuft hoch":"kein Timer"})</div><div class="setting">${s.counts.map((c,k)=>`<input type="number" min="1" max="999" value="${c}" data-i="${i}" data-k="${k}" data-u="c"><span>×</span>`).join("")}</div></div></div><div class="step-actions"><button class="primary" data-a="go" data-i="${i}">▶ Anzeigen</button></div>`)+`</div></article>`).join("");
+ return `<div class="bwL"><aside class="controls"><h2>Steuerung</h2><div class="control-buttons">
+ <button class="primary" data-a="${cur>=0?"set":"go"}" data-i="0">${cur>=0?"▣ Kompakt":"▶ Entwicklung starten"}</button>
+ <button data-a="db">Zeit suchen / Datenbank</button><button class="danger" data-a="resetAsk">Alles zurücksetzen</button></div>
+ <div class="cinfo"><b>Aktuelle Kombination</b><br>${cline()}<br>Entwicklungszeit: ${S[1].time?formatTime(S[1].time):"– nicht gesetzt –"}</div></aside><section>${cards}</section></div>`}
+root.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,i=+b.dataset.i;
+ ({go:()=>go(i),pause,rs:()=>resetStep(i),adv,prev:()=>go(cur-1),skip:()=>go(cur+1),set:()=>{set=!set;draw()},db:()=>openDB("f"),
+ save:()=>openDB("f"),resetAsk:()=>{if(cur>=0&&!confirm("Alles zurücksetzen?"))return;resetAll()}})[a]?.()});
+root.addEventListener("change",e=>{const t=e.target,i=+t.dataset.i;if(isNaN(i)||!t.dataset.u)return;
+ if(t.dataset.u==="c"){S[i].counts[+t.dataset.k]=Math.max(1,t.valueAsNumber||1)}
+ else{const m=root.querySelector(`input[data-i="${i}"][data-u="m"]`).valueAsNumber||0,s=root.querySelector(`input[data-i="${i}"][data-u="s"]`).valueAsNumber||0;S[i].time=Math.max(0,Math.min(59999,m*60+s));if(i===cur&&!run)rem=S[i].time}
+ saveS();upd()});
+document.addEventListener("keydown",e=>{if(document.body.dataset.mode!=="bw"||e.target.matches("input,select,textarea")||dbp.classList.contains("on"))return;if(e.code==="Space"){e.preventDefault();pause()}});
+
+/* ---- Datenbank ---- */
+let tab="f",F={},R=null,L={q:"",ei:"",temp:"",del:false},lim=200,syncMsg=LS("bwMsg","Nicht angemeldet");
+const MK=["Ilford","Kodak","Fomapan","Kentmere","AgfaPhoto","Adox","Rollei","Fujifilm"],TY=["HP5 Plus","FP4 Plus","Delta 100","Delta 400","Delta 3200","Pan F Plus","Tri-X 400","T-Max 100","T-Max 400","APX 100","APX 400","Fomapan 100","Fomapan 200","Fomapan 400","Kentmere 100","Kentmere 400","RPX 400"],DV=["Kodak D-76","Kodak T-Max","Kodak XTOL","Kodak HC-110","Ilford ID-11","Ilford DD-X","Ilfotec HC","Rodinal","Adonal","Fomadon P"];
+const uniq=(f,b)=>[...new Set([...b,...DB.map(e=>e[f]).filter(Boolean)])];
+const persist=()=>{SV("bwDB",DB);SV("bwDirty",1);autoSync()};
+function snap(label){SN.unshift({ts:now(),label,data:JSON.parse(JSON.stringify(DB))});SV("bwSnaps",SN)}
+function openDB(t){F=combo?{...combo,timeStr:S[1].time?formatTime(S[1].time):"",date:today(),src:combo.src||"manuell"}:{timeStr:S[1].time?formatTime(S[1].time):"",date:today(),src:"manuell"};R=null;tab=t||"f";dbp.classList.add("on");paint()}
+const closeDB=()=>{dbp.classList.remove("on");draw()};
+const paint=()=>{dbp.innerHTML=dbH();};
+const fld=(f,l,list,ph)=>`<div><label>${l}</label><input type="text" data-f="${f}" value="${esc(F[f]||"")}" ${list?`list="dl-${list}"`:""} placeholder="${ph||""}"></div>`;
+function dbH(){
+ const T=[["f","Suche & Eintrag"],["l","Gespeichert ("+DB.filter(e=>!e.del).length+")"],["s","Sicherung & Sync"]].map(([k,t])=>`<button class="${tab===k?"primary":""}" data-a="tab" data-k="${k}">${t}</button>`).join("");
+ return `<div class="dbi"><div class="dbh"><h2>Entwicklungsdatenbank</h2><button data-a="dbx">✕ Schließen</button></div><div class="tabs">${T}</div>${tab==="f"?formH():tab==="l"?listH():syncH()}<p class="hint">Programmversion ${VER}</p></div>`}
+function formH(){
+ const dl=(id,a)=>`<datalist id="dl-${id}">${a.map(x=>`<option value="${esc(x)}">`).join("")}</datalist>`;
+ return `<div class="card">${dl("mk",uniq("maker",MK))}${dl("ty",uniq("type",TY))}${dl("dv",uniq("dev",DV))}
+ <div class="fg">${fld("maker","Filmhersteller","mk")}${fld("type","Filmtyp","ty")}${fld("nom","Nennempfindlichkeit (ISO)")}${fld("ei","Belichtungsindex (EI)")}${fld("dev","Entwickler (ohne Hersteller, z. B. T-Max)","dv")}${fld("dil","Verdünnung (z. B. 1+4, stock)")}${fld("temp","Temperatur °C")}${fld("timeStr","Zeit (mm:ss oder Dezimalmin.)")}${fld("src","Quelle der Zeit")}<div><label>Datum</label><input type="date" data-f="date" value="${esc(F.date||"")}"></div></div>
+ <div style="margin-top:8px"><label>Bemerkungen</label><textarea rows="2" data-f="note">${esc(F.note||"")}</textarea></div>
+ <div class="row"><button class="primary" data-a="search">🔎 Online suchen</button><button data-a="apply">In Timer übernehmen</button><button data-a="saveuse">Speichern & in Timer</button><button data-a="saveonly">Nur speichern</button><button data-a="clear">Neu</button></div></div>${resH()}`}
+function resH(){
+ if(!R)return "";if(R.busy)return `<div class="card">Suche läuft …</div>`;
+ const lk=`<button data-a="openchart">Chart im Browser öffnen</button>`;
+ if(R.err)return `<div class="card"><b>${esc(R.err)}</b><div class="row">${lk}</div><p class="hint">Zeit dort ablesen und oben manuell eintragen. Optional: eigenen CORS-Proxy unter „Sicherung & Sync“ eintragen.</p></div>`;
+ if(!R.rows.length)return `<div class="card"><b>Keine Angaben gefunden.</b> Es wird nichts geschätzt. Zeit bitte manuell eingeben.<div class="row">${lk}</div></div>`;
+ return `<div class="card"><b>${R.rows.length} Treffer · Quelle: Massive Dev Chart (Digitaltruth)</b><p class="hint">Hersteller- und Community-Werte sind dort vermischt und werden hier nicht getrennt ausgewiesen. Alle Zeiten sind Startwerte. Keine automatische Temperaturkorrektur.</p>`+
+ R.rows.map((r,i)=>`<div class="card"><b>${formatTime(r.min*60)} min</b> @ ${isNaN(r.temp)?"?":r.temp} °C · ISO ${esc(r.iso)} · Verd. ${esc(r.dil)}<span class="tag ${r.ex?"ok":"cmp"}">${r.ex?"EXAKT":"VERGLEICHSWERT: "+r.why.join(", ")}</span><div class="cinfo">${esc(r.film)} / ${esc(r.dev)}${r.note?" · "+esc(r.note):""}<br>Original: ${esc(r.raw)}</div><button class="primary" data-a="pick" data-i="${i}">Übernehmen</button></div>`).join("")+`</div>`}
+const rows=()=>{const q=L.q.toLowerCase();const a=DB.filter(e=>(L.del?e.del:!e.del)&&(!q||(e.maker+" "+e.type+" "+e.dev+" "+e.note).toLowerCase().includes(q))&&(!L.ei||String(e.ei)===L.ei)&&(!L.temp||String(e.temp)===L.temp)).sort((x,y)=>y.updated-x.updated);
+ return a.slice(0,lim).map(e=>`<div class="card ${e.del?"del":""}"><b>${esc(e.maker+" "+e.type)}</b> @ EI ${esc(e.ei||"–")} · ${esc(e.dev)} ${esc(e.dil)} · ${esc(e.temp||"–")} °C · <b>${formatTime(e.time)}</b><div class="cinfo">Quelle: ${esc(e.src)} · ${esc(e.date)}${e.note?"<br>"+esc(e.note):""}</div><div class="row">${e.del?`<button data-a="rest" data-id="${e.id}">Wiederherstellen</button>`:`<button class="primary" data-a="use" data-id="${e.id}">In Timer</button><button data-a="edit" data-id="${e.id}">Bearbeiten</button><button class="danger" data-a="rm" data-id="${e.id}">Löschen</button>`}</div></div>`).join("")+(a.length>lim?`<button data-a="more">Mehr anzeigen (${a.length-lim})</button>`:"")||"<p class='hint'>Keine Einträge.</p>"};
+const listH=()=>`<div class="card fg"><div><label>Suche Film/Entwickler</label><input type="text" data-l="q" value="${esc(L.q)}"></div><div><label>EI</label><input type="text" data-l="ei" value="${esc(L.ei)}"></div><div><label>Temp. °C</label><input type="text" data-l="temp" value="${esc(L.temp)}"></div><div><label>&nbsp;</label><label><input type="checkbox" data-l="del" ${L.del?"checked":""}> gelöschte zeigen</label></div></div><div id="bwlist">${rows()}</div>`;
+const syncH=()=>`<div class="card"><b>Google Drive</b><div class="cinfo">Status: ${esc(syncMsg)}<br>Letzte erfolgreiche Synchronisation: ${LS("bwLast",0)?dstr(LS("bwLast",0)):"noch nie"}${LS("bwDirty",0)?"<br>⚠ Nicht synchronisierte Änderungen vorhanden":""}</div><div class="row"><button class="primary" data-a="signin">Anmelden & synchronisieren</button><button data-a="syncnow">Jetzt synchronisieren</button><button data-a="signout">Trennen</button></div>
+ <label style="margin-top:8px">Optionaler CORS-Proxy für die Online-Abfrage (URL-Präfix)</label><input type="text" data-s="proxy" value="${esc(LS("bwProxy",""))}" placeholder="https://mein-worker.example/?url="></div>
+ <div class="card"><b>Sicherungen</b><div class="row"><button class="primary" data-a="snapnow">Manuelle Sicherung</button><button data-a="export">JSON-Export</button><button data-a="import">JSON-Import</button></div><input type="file" id="impf" accept=".json" hidden>
+ ${SN.map((s,i)=>`<details class="card"><summary>${dstr(s.ts)} · ${esc(s.label)} · ${s.data.length} Einträge</summary><div class="cinfo">${s.data.slice(0,100).map(e=>esc(e.maker+" "+e.type+" / "+e.dev+" "+formatTime(e.time)+(e.del?" (gelöscht)":""))).join("<br>")}</div><div class="row"><button data-a="restsn" data-i="${i}">Wiederherstellen</button><button class="danger" data-a="delsn" data-i="${i}">Sicherung löschen</button></div></details>`).join("")||"<p class='hint'>Noch keine Sicherungen. Ältere werden nie automatisch gelöscht.</p>"}</div>`;
+function entry(){const t=parseT(F.timeStr);if(!(F.maker||F.type)||!F.dev||t<=0){alert("Bitte Film, Entwickler und Entwicklungszeit angeben.");return null}
+ return {id:F.id||uid(),maker:F.maker||"",type:F.type||"",nom:F.nom||"",ei:F.ei||"",dev:F.dev,dil:F.dil||"",temp:F.temp||"",time:t,src:F.src||"manuell",date:F.date||today(),note:F.note||"",updated:now(),del:false}}
+function store(e){const i=DB.findIndex(x=>x.id===e.id);if(i<0)DB.push(e);else{snap("Vor Änderung (automatisch)");DB[i]=e}F.id=e.id;persist()}
+function useE(e){combo={maker:e.maker,type:e.type,nom:e.nom,ei:e.ei,dev:e.dev,dil:e.dil,temp:e.temp,src:e.src};SV("bwCombo",combo);S[1].time=e.time;saveS();if(cur===1&&!run)rem=e.time;closeDB()}
+function applyF(){const t=parseT(F.timeStr);if(t<=0){alert("Bitte Entwicklungszeit angeben.");return false}useE({...F,time:t});return true}
+dbp.addEventListener("input",e=>{const t=e.target;if(t.dataset.f)F[t.dataset.f]=t.value;else if(t.dataset.l){L[t.dataset.l]=t.type==="checkbox"?t.checked:t.value;$("#bwlist").innerHTML=rows()}else if(t.dataset.s)SV("bwProxy",t.value.trim())});
+dbp.addEventListener("change",e=>{if(e.target.id==="impf"&&e.target.files[0]){const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result),a=Array.isArray(j)?j:j.entries;if(!Array.isArray(a))throw 0;snap("Vor Import (automatisch)");merge(a,true);persist();syncMsg="Import: "+a.length+" Einträge zusammengeführt";paint()}catch(x){alert("Ungültige JSON-Datei.")}};r.readAsText(e.target.files[0])}});
+dbp.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,id=b.dataset.id,i=+b.dataset.i,E=DB.find(x=>x.id===id);
+ const A={tab:()=>{tab=b.dataset.k;paint()},dbx:closeDB,search,openchart:()=>window.open(R.url,"_blank"),clear:()=>{F={date:today(),src:"manuell"};R=null;paint()},
+ apply:()=>{applyF()},saveuse:()=>{const x=entry();if(x){store(x);applyF()}},saveonly:()=>{const x=entry();if(x){store(x);syncMsg="Eintrag gespeichert";alert("Gespeichert.")}},
+ pick:()=>{const r=R.rows[i];F.timeStr=formatTime(r.min*60);F.src="Massive Dev Chart"+(r.ex?"":" – Vergleichswert ("+r.raw+")");tab="f";paint()},
+ use:()=>useE(E),edit:()=>{F={...E,timeStr:formatTime(E.time)};R=null;tab="f";paint()},rm:()=>{if(confirm("Eintrag löschen? (Wiederherstellung über „gelöschte zeigen“ möglich)")){E.del=true;E.updated=now();persist();paint()}},
+ rest:()=>{E.del=false;E.updated=now();persist();paint()},more:()=>{lim+=200;paint()},snapnow:()=>{snap("Manuelle Sicherung");paint()},
+ export:()=>{const u=URL.createObjectURL(new Blob([JSON.stringify({app:"film-timer",v:1,exported:now(),entries:DB},null,1)],{type:"application/json"})),l=document.createElement("a");l.href=u;l.download="entwicklungsdatenbank-"+today()+".json";l.click();setTimeout(()=>URL.revokeObjectURL(u),2000)},
+ import:()=>$("#impf").click(),restsn:()=>{if(!confirm("Datenstand wiederherstellen? Der aktuelle Stand wird vorher gesichert."))return;snap("Vor Wiederherstellung (automatisch)");DB=JSON.parse(JSON.stringify(SN[i].data));DB.forEach(x=>x.updated=now());persist();paint()},
+ delsn:()=>{if(confirm("Diese Sicherung endgültig löschen?")){SN.splice(i,1);SV("bwSnaps",SN);paint()}},
+ signin:()=>sync(true),syncnow:()=>sync(true),signout:()=>{try{if(tok)google.accounts.oauth2.revoke(tok)}catch(x){}tok=null;SV("bwOn",0);syncMsg="Getrennt";paint()}};A[a]?.()});
+
+/* ---- Online-Abfrage (Massive Dev Chart) ---- */
+const nm=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+function parseDT(h){const d=new DOMParser().parseFromString(h,"text/html"),out=[];
+ d.querySelectorAll("table").forEach(t=>{let m=null;t.querySelectorAll("tr").forEach(tr=>{const c=[...tr.children].map(x=>x.textContent.replace(/\s+/g," ").trim()),l=c.map(x=>x.toLowerCase());
+  if(l.includes("film")&&l.some(x=>x.startsWith("developer"))){const f=p=>l.findIndex(p);m={film:f(x=>x==="film"),dev:f(x=>x.startsWith("developer")),dil:f(x=>x.startsWith("dilution")),iso:f(x=>x.startsWith("asa")||x.startsWith("iso")),a:f(x=>x.includes("35")),b:f(x=>x.includes("120")),temp:f(x=>x.startsWith("temp")),note:f(x=>x.startsWith("notes"))};return}
+  if(!m||c.length<4)return;const g=k=>m[k]>=0?c[m[k]]||"":"",n=x=>parseFloat(String(x).replace(",","."));const tm=n(g("a"))||n(g("b"));if(!g("film")||!tm)return;
+  out.push({film:g("film"),dev:g("dev"),dil:g("dil"),iso:g("iso"),min:tm,temp:n(g("temp")),note:g("note"),raw:c.join(" | ")})})});return out}
+function rank(rs){const ei=+F.ei||+F.nom||0,tp=parseFloat(String(F.temp).replace(",",".")),dl=nm(String(F.dil||"").replace(":","+"));
+ rs.forEach(r=>{r.why=[];if(ei&&+r.iso!==ei)r.why.push("ISO "+r.iso);if(!isNaN(tp)&&r.temp!==tp)r.why.push((isNaN(r.temp)?"?":r.temp)+" °C");if(dl&&nm(r.dil)!==dl)r.why.push("Verd. "+r.dil);r.ex=!r.why.length;r.d=Math.abs((+r.iso||0)-ei)});
+ return rs.sort((a,b)=>b.ex-a.ex||a.why.length-b.why.length||a.d-b.d).slice(0,40)}
+async function search(){
+ const ft=((F.maker||"")+" "+(F.type||"")).trim().replace(/t-max/ig,"TMax"),dt=(F.dev||"").trim().replace(/^(kodak|ilford|adox|foma|agfa)\s+/i,"");
+ if(!ft||!dt){alert("Bitte Film und Entwickler angeben.");return}
+ const url="https://www.digitaltruth.com/devchart.php?Film="+encodeURIComponent("%"+ft+"%")+"&Developer="+encodeURIComponent("%"+dt+"%")+"&mdc=Search&TempUnits=C&TimeUnits=D";
+ R={busy:true,url};paint();
+ try{const px=LS("bwProxy","");const r=await fetch(px?px+encodeURIComponent(url):url);if(!r.ok)throw new Error("HTTP "+r.status);R={url,rows:rank(parseDT(await r.text()))}}
+ catch(e){R={url,err:"Online-Abfrage nicht möglich ("+e.message+"). Meist blockiert der Browser den Direktzugriff (CORS) oder es fehlt die Verbindung."}}
+ if(tab==="f")paint()}
+
+/* ---- Google Drive ---- */
+const CID="1059120875845-tv4107ebld7irb7oqof1mprhhetqjpao.apps.googleusercontent.com",FN="C41-SW-Entwicklungsdatenbank.json",DR="https://www.googleapis.com/";
+let tok=null,tokExp=0,fid=LS("bwFid",null),syncing=false,tmr=null;
+const setMsg=m=>{syncMsg=m;SV("bwMsg",m);if(dbp.classList.contains("on")&&tab==="s")paint()};
+const gis=()=>new Promise((ok,no)=>{if(window.google?.accounts?.oauth2)return ok();const s=document.createElement("script");s.src="https://accounts.google.com/gsi/client";s.onload=ok;s.onerror=()=>no(new Error("Google-Skript nicht ladbar (offline?)"));document.head.appendChild(s)});
+const getTok=inter=>gis().then(()=>new Promise((ok,no)=>{if(tok&&now()<tokExp-60000)return ok(tok);
+ google.accounts.oauth2.initTokenClient({client_id:CID,scope:DR+"auth/drive.file",callback:r=>{if(r.error)return no(new Error(r.error));tok=r.access_token;tokExp=now()+r.expires_in*1000;SV("bwOn",1);ok(tok)},error_callback:x=>no(new Error(x.type||"Anmeldung abgebrochen"))}).requestAccessToken({prompt:inter?"":"none"})}));
+async function api(u,o={}){const r=await fetch(u,{...o,headers:{Authorization:"Bearer "+tok,...(o.headers||{})}});if(!r.ok){const e=new Error("Drive HTTP "+r.status);e.st=r.status;throw e}return r}
+async function find(){if(fid)return fid;const j=await(await api(DR+"drive/v3/files?q="+encodeURIComponent(`name='${FN}' and trashed=false`)+"&fields=files(id)")).json();fid=j.files[0]?.id||null;if(fid)SV("bwFid",fid);return fid}
+function merge(rem,noConf){let L0=noConf?Infinity:LS("bwLast",0),c=0;const m=new Map(DB.map(e=>[e.id,e]));
+ for(const r of rem){if(!r?.id)continue;const l=m.get(r.id);if(!l){DB.push(r);m.set(r.id,r);continue}
+  if(JSON.stringify({...l,updated:0})===JSON.stringify({...r,updated:0}))continue;
+  if(!noConf&&l.updated>L0&&r.updated>L0){const win=r.updated>l.updated?r:l,lose=win===r?l:r;Object.assign(l,win);if(!lose.del){DB.push({...lose,id:uid(),updated:now(),note:((lose.note||"")+" [Konflikt-Kopie, Stand "+dstr(lose.updated)+"]").trim(),del:false});c++}}
+  else if(r.updated>l.updated)Object.assign(l,r)}
+ return c}
+async function sync(inter){if(syncing)return;if(!navigator.onLine){setMsg("Offline – Änderungen werden später synchronisiert");return}
+ syncing=true;setMsg("Synchronisiere …");
+ try{await getTok(inter);let id=await find(),rm=null;
+  if(id){try{rm=await(await api(DR+"drive/v3/files/"+id+"?alt=media")).json()}catch(x){if(x.st===404){fid=null;SV("bwFid",null);id=null}else throw x}}
+  let c=0;if(rm?.entries){snap("Vor Synchronisation (automatisch)");c=merge(rm.entries)}
+  const data=JSON.stringify({app:"film-timer",v:1,saved:now(),entries:DB});
+  if(id)await api(DR+"upload/drive/v3/files/"+id+"?uploadType=media",{method:"PATCH",headers:{"Content-Type":"application/json"},body:data});
+  else{const b="b"+now(),j=await(await api(DR+"upload/drive/v3/files?uploadType=multipart&fields=id",{method:"POST",headers:{"Content-Type":"multipart/related; boundary="+b},body:`--${b}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify({name:FN,mimeType:"application/json"})}\r\n--${b}\r\nContent-Type: application/json\r\n\r\n${data}\r\n--${b}--`})).json();fid=j.id;SV("bwFid",fid)}
+  SV("bwDB",DB);SV("bwLast",now());SV("bwDirty",0);setMsg("Synchronisiert"+(c?" · "+c+" Konflikt(e) als Kopie behalten":""))}
+ catch(x){setMsg("Fehler: "+x.message+(inter?"":" (ggf. erneut anmelden)"))}
+ syncing=false}
+function autoSync(){clearTimeout(tmr);if(LS("bwOn",0))tmr=setTimeout(()=>sync(false),2500)}
+addEventListener("online",()=>{if(LS("bwDirty",0)&&LS("bwOn",0))sync(false)});
+
+/* ---- Modus ---- */
+window.setMode=m=>{if(m==="home"&&((typeof running!=="undefined"&&running)||busy())&&!confirm("Laufenden Timer verlassen?"))return;
+ if(m==="home"){clearInterval(interval);running=false;clearInterval(iv);run=false}
+ document.body.dataset.mode=m;document.body.classList.toggle("bw",m==="bw");
+ $("#hTitle").textContent=m==="bw"?"Timer Schwarz-Weiß":m==="c41"?"Timer C41":"Filmentwicklung";
+ if(m==="c41"){renderFilm();render();update()}else $("header").classList.remove("compact");
+ if(m==="bw")draw()};
+document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$("#homeBtn").onclick=()=>setMode("home");
+draw();if(LS("bwOn",0)&&navigator.onLine)sync(false);
+})();
 </script>
 </body>
 </html>
